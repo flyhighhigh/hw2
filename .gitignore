@@ -1,0 +1,7 @@
+a
+gdb
+main
+
+#ignore all .o .txt file
+*.o
+*.txt
