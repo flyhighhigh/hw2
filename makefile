@@ -1,3 +1,3 @@
 all:main.c
-	gcc main.c -o a
-	./a -d 1e4 -q 1e3 -arr -bs -ll -bst -hash
+	gcc main.c
+#	./a.out -d 1e6 -q 1e5 -arr -bs -ll -bst -hash
