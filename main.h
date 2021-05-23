@@ -16,9 +16,7 @@ enum{
 typedef struct node Node;
 struct node{
     char* str;
-    Node* left;
-    Node* right;
-    Node* next;
+    Node *left,*right,*next;
 };
 
 int opt[5];
@@ -37,21 +35,32 @@ Node** hash_table;
 
 void create();
 unsigned int hash_func(int,char*);
+
 void arr_build();
 void arr_query();
+
 void bs_build();
 void bs_query();
 void bs_find(int,int,char*);
+
 void ll_build();
 void ll_query();
 Node* newnode(char*);
+
 void bst_build();
 void bst_findend(Node*,char*);
 void bst_query();
+
 void hash_build();
 void hash_query();
 
-char name[5][10]={"ll","arr","bs","bst","hash"};
+void free_func(int);
+void ll_free(Node*);
+void arr_free(char**);
+void bst_free(Node*);
+void hash_free();
+
+char opt_name[5][10]={"ll","arr","bs","bst","hash"};
 typedef void (*Fptr)();
 Fptr build_func[5]={ll_build,arr_build,bs_build,bst_build,hash_build};
 Fptr query_func[5]={ll_query,arr_query,bs_query,bst_query,hash_query};

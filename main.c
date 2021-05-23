@@ -55,7 +55,6 @@ int main(int argc,char** argv){
     printf("optcnt   %d\n",opt_cnt);
 
     create();
-    puts("finish create");
 
     struct  timeval start;
     struct  timeval end;
@@ -64,7 +63,7 @@ int main(int argc,char** argv){
     for(int i=0;i<5;i++){
         if(!opt[i])continue;
 
-        printf("\n%s:\n",name[i]);
+        printf("\n%s:\n",opt_name[i]);
         gettimeofday(&start, NULL);
             build_func[i]();
         gettimeofday(&end, NULL);
@@ -77,7 +76,13 @@ int main(int argc,char** argv){
         timediff = 1000000 * (end.tv_sec - start.tv_sec) + end.tv_usec - start.tv_usec;
         printf("query time = %f sec\n",timediff/1000000.0);
 
+        free_func(i);
     }
+
+    //query_const的字串存的是來自data_const的指標 所以不用free
+    for(int i=0;i<data_cnt;i++) free(data_const[i]);
+    free(data_const);
+    free(query_const);
 
     return 0;
 }
@@ -88,18 +93,20 @@ void create(){
 
     data_const=(char**)malloc(sizeof(char*)*data_cnt);
     query_const=(char**)malloc(sizeof(char*)*query_cnt);
+
     char temp[7];
+    int r,idx;
     for(int i=0;i<data_cnt;i++){
         //產生唯一測資
         while(1){
             for(int j=0;j<5;j++){
-                int r=rand()%52;
+                r=rand()%52;
                 if(r<26) temp[j]='a'+r;
                 else temp[j]='A'+r%26;
             }
             temp[5] = '\0';
             //確認是否唯一
-            int idx = hash_func(33,temp)%(int)1e6;
+            idx = hash_func(33,temp)%(int)1e6;
             if(data_hash[idx]==0){
                 data_hash[idx]=1;
                 break;
@@ -116,6 +123,8 @@ void create(){
     }
     fclose(fq);
     fclose(fd);
+    
+    puts("create finish");
 }
 
 unsigned int hash_func(int k,char* str){
@@ -242,7 +251,7 @@ void bst_query(){
 }
 
 void hash_build(){
-    hash_table=(Node**)malloc(sizeof(Node*)*data_cnt);
+    hash_table=(Node**)calloc(data_cnt,sizeof(Node*));
     for(int i=0;i<data_cnt;i++){
         int idx=hash_func(65,data_const[i])%data_cnt;
 
@@ -268,4 +277,52 @@ void hash_query(){
             p=p->next;
         }
     }
+}
+
+void free_func(int i){
+    switch(i){
+        case ll:
+            ll_free(ll_head);
+            break;
+        case arr:
+            arr_free(data_arr);
+            break;
+        case bs:
+            arr_free(data_bs);
+            break;
+        case bst:
+            bst_free(bst_head);
+            break;
+        case hash:
+            hash_free();
+            break;
+    }
+    puts("free finish");
+}
+
+void ll_free(Node* head){
+    Node* current=head;
+    Node* last;
+    while(current){
+        last=current;
+        current=current->next;
+        free(last);
+    }
+}
+
+void arr_free(char** data){
+    free(data);
+}
+
+void bst_free(Node* parent){
+    if(parent==NULL)return;
+    bst_free(parent->left);
+    bst_free(parent->right);
+    free(parent);
+}
+
+void hash_free(){
+    for(int i=0;i<data_cnt;i++)
+        ll_free(hash_table[i]);
+    free(hash_table);
 }
