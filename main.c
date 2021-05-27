@@ -297,7 +297,7 @@ void free_func(int i){
             hash_free();
             break;
     }
-    puts("free finish");
+    //puts("free finish");
 }
 
 void ll_free(Node* head){
